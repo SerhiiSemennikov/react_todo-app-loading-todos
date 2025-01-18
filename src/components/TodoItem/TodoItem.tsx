@@ -5,10 +5,13 @@ import React from 'react';
 
 type Props = {
   todo: Todo;
+  onDelete: (todoId: number) => void;
+  isTodoLoading: boolean;
+  isTodoDeleting: boolean;
 };
 
 export const TodoItem: React.FC<Props> = props => {
-  const { todo } = props;
+  const { todo, onDelete, isTodoLoading, isTodoDeleting } = props;
 
   return (
     <div
@@ -22,18 +25,28 @@ export const TodoItem: React.FC<Props> = props => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => {}}
+          onClick={() => {}}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {todo.title}:{todo.id}
       </span>
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
-        ×
-      </button>
-
-      <div data-cy="TodoLoader" className="modal overlay">
+      {!isTodoDeleting && (
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          disabled={isTodoLoading}
+          onClick={() => onDelete(todo.id)}
+        >
+          ×
+        </button>
+      )}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', { 'is-active': isTodoLoading })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

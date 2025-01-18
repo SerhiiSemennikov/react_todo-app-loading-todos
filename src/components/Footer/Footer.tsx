@@ -7,13 +7,11 @@ type Props = {
   filterField: Filter;
   setFilteredField: React.Dispatch<React.SetStateAction<Filter>>;
   todos: Todo[];
+  onDeleteAllCompleted: () => void;
 };
 
-export const Footer: React.FC<Props> = ({
-  filterField,
-  setFilteredField,
-  todos,
-}) => {
+export const Footer: React.FC<Props> = props => {
+  const { filterField, setFilteredField, todos, onDeleteAllCompleted } = props;
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
 
   return (
@@ -36,7 +34,6 @@ export const Footer: React.FC<Props> = ({
             {value}
           </a>
         ))}
-      
       </nav>
 
       <button
@@ -44,6 +41,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={todos.every(todo => !todo.completed)}
+        onClick={onDeleteAllCompleted}
       >
         Clear completed
       </button>
