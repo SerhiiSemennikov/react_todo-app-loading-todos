@@ -8,10 +8,11 @@ type Props = {
   onDelete: (todoId: number) => void;
   isTodoLoading: boolean;
   isTodoDeleting: boolean;
+  isProcessed: boolean;
 };
 
 export const TodoItem: React.FC<Props> = props => {
-  const { todo, onDelete, isTodoLoading, isTodoDeleting } = props;
+  const { todo, onDelete, isTodoLoading, isTodoDeleting, isProcessed } = props;
 
   return (
     <div
@@ -37,7 +38,7 @@ export const TodoItem: React.FC<Props> = props => {
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          disabled={isTodoLoading}
+          disabled={isTodoLoading || isProcessed}
           onClick={() => onDelete(todo.id)}
         >
           ×

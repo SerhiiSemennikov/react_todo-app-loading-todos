@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { createTodo, deleteTodo, USER_ID } from './api/todos';
 import { getTodos } from './api/todos';
-//import classNames from 'classnames';
-import { Filter } from './types/FilterType';
 
+import { Filter } from './types/FilterType';
+import './App.scss';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
@@ -22,11 +22,14 @@ export const App: React.FC = () => {
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  //const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
+  const [processings, setProcessings] = useState<number[]>([]);
   const [isTodoLoading, setIsTodoLoading] = useState(false);
   const completedTodos = todos.filter(todo => todo.completed);
   const [isTodoDeleting, setIsTodoDeleting] = useState(false);
+  const [creatingTodo, setCreatingTodo] = useState(false);
+
   const onAdd = async (title: string) => {
+    setCreatingTodo(true);
     setTempTodo({
       id: 0,
       title,
@@ -50,12 +53,14 @@ export const App: React.FC = () => {
         throw err;
       }
     } finally {
+      setCreatingTodo(false);
+
       return setTempTodo(null);
     }
   };
 
   const onDelete = (todoId: number) => {
-    //setLoadingTodos(prevTodos => [...prevTodos, todoId]);
+    setProcessings(prevTodos => [...prevTodos, todoId]);
     setIsTodoDeleting(true);
     deleteTodo(todoId)
       .then(() =>
@@ -66,10 +71,10 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage(ErrorMessage.UnableToDelete);
       })
-      .finally(() => setIsTodoDeleting(false));
-    //.finally(() =>
-    //  setLoadingTodos(prevTodos => prevTodos.filter(id => todoId !== id)),
-    //);
+      .finally(() =>
+        setProcessings(prevTodos => prevTodos.filter(id => todoId !== id)),
+      );
+    setIsTodoDeleting(false);
   };
 
   const onDeleteAllCompleted = () => {
@@ -117,6 +122,7 @@ export const App: React.FC = () => {
           isInputDisabled={!!tempTodo}
           isTodoLoading={isTodoLoading}
         />
+
         {todos.length > 0 && (
           <>
             <TodoList
@@ -125,6 +131,8 @@ export const App: React.FC = () => {
               onDelete={onDelete}
               isTodoLoading={isTodoLoading}
               isTodoDeleting={isTodoDeleting}
+              creatingTodo={creatingTodo}
+              processings={processings}
             />
             <Footer
               filterField={filteredField}
